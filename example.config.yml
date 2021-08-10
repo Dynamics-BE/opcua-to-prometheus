@@ -1,0 +1,32 @@
+OPCUAEndpoint: opc.tcp://127.0.0.1:4897/Softing/dataFEED/Server
+SubscriptionInterval: 1000
+Tags:
+  - MetricsName: Metric1
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[0]
+  - MetricsName: Metric2
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[1]
+  - MetricsName: Metric3
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[2]
+  - MetricsName: Metric4
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[3]
+  - MetricsName: Metric5
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[4]
+  - MetricsName: Metric6
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[5]
+  - MetricsName: Metric7
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[6]
+  - MetricsName: Metric8
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[7]
+  - MetricsName: Metric9
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[8]
+  - MetricsName: Metric10
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[9]
+  - MetricsName: Metric11
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[10]
+  - MetricsName: Metric12
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[11]
+  - MetricsName: Metric13
+    NodeID: ns=3;s=DB.OPCData.Temperaturen.[12]
+  - MetricsName: Metric0
+    NodeID: ns=3;s=DB.OPCData.Alive
+    SubscriptionInterval: 100

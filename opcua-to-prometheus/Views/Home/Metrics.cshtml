@@ -1,0 +1,6 @@
+﻿@using opcua_to_prometheus.Models
+@model Configuration
+@foreach (Tag tag in Model.Tags)
+{
+    @Html.Raw(tag.MetricsName)@Html.Raw(" ")@Html.Raw(tag.Value)@:
+}

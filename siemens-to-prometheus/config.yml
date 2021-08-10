@@ -1,8 +1,0 @@
-﻿OPCUAEndpoint: opc.tcp://localhost:4897/Softing/dataFEED/Server
-Tags:
-  - MetricsName: Metric1
-    NodeID: ns=3;s=DB.Temperaturen.Logging.[0].Value
-  - MetricsName: Metric2
-    NodeID: ns=3;s=DB.Temperaturen.Logging.[1].Value
-  - MetricsName: Metric3
-    NodeID: ns=3;s=DB.Temperaturen.Logging.[2].Value
