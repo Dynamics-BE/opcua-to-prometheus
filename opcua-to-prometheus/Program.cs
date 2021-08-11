@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using opcua_to_prometheus.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +14,14 @@ namespace opcua_to_prometheus
     public class Program
     {
 
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var webHost = CreateHostBuilder(args).Build();
+
+            var plcService = webHost.Services.GetRequiredService<PLCService_OPCFoundation>();
+            await plcService.InitializeAsync();
+
+            webHost.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

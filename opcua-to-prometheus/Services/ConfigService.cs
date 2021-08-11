@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using System.IO;
 using opcua_to_prometheus.Models;
 using YamlDotNet.Serialization;
@@ -15,13 +16,13 @@ namespace opcua_to_prometheus.Services
 
         public Configuration ActiveConfig { get; set; }
         private FileSystemWatcher watcher;
+        public event EventHandler ConfigChangedEvent;
 
         public ConfigService()
         {
             ReadConfiguration();
             StartFileWatch();
             //DebugAddVariables();
-            //dfg
         }
 
         private void DebugAddVariables()
@@ -49,39 +50,52 @@ namespace opcua_to_prometheus.Services
                 .Build();
 
             Configuration readConfig = null;
-            try
-            {
-                using (var sr = new StreamReader("../config.yml"))
+            int i = 1;
+            while (i < 5){
+              
+                try
                 {
-                    readConfig = deserializer.Deserialize<Configuration>(sr);
+                    using (var sr = new StreamReader("../config.yml"))
+                    {
+                        readConfig = deserializer.Deserialize<Configuration>(sr);
+                    }
                 }
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("The config file could not be read");
-                Console.WriteLine(e.Message);
-            }
+                catch (IOException e)
+                {
+                    Console.WriteLine("The config file could not be read");
+                    Console.WriteLine(e.Message);
+                }
+                if (readConfig != null)
+                {
+                    Console.WriteLine($"Configuration file read succesfully");
+                    ActiveConfig = readConfig;
+                    i = 5;
+                }
+                else
+                {
+                    Console.WriteLine($"Retrying to read the config file: attempt {i}");
+                }
 
-            Console.WriteLine($"Configuration file read succesfully");
-
-            ActiveConfig = readConfig;
+                Thread.Sleep(1000);
+                i++;
+            }
         }
 
         private void StartFileWatch()
         {
-            watcher = new FileSystemWatcher(Directory.GetCurrentDirectory(), "config.yml");
+            watcher = new FileSystemWatcher(Path.Combine(Directory.GetCurrentDirectory(), @"..\"), "config.yml");
             watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
             watcher.Changed += OnChanged;
             watcher.Renamed += OnChanged;
             watcher.EnableRaisingEvents = true;
-            Console.WriteLine($"Current directory {Directory.GetCurrentDirectory()}");
+            Console.WriteLine($"Current directory {Path.Combine(Directory.GetCurrentDirectory(), @"..\")}");
             Console.WriteLine($"Watching config file for changes.");
         }
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            Console.WriteLine($"Config file changed, rereading.");
+            Console.WriteLine($"Config file changed, rereading. {e.ChangeType}");
             ReadConfiguration();
+            ConfigChangedEvent(this, new EventArgs());
         }
-
     }
 }

@@ -17,18 +17,15 @@ namespace opcua_to_prometheus
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ConfigService>();
-            services.AddSingleton<PLCService>();
+            services.AddSingleton<PLCService_OPCFoundation>();
 
             services.AddControllers();
             services.AddMvc();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.ApplicationServices.GetRequiredService<PLCService>();
-
             app.UseDeveloperExceptionPage();
 
             app.UseRouting();

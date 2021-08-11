@@ -18,6 +18,7 @@ namespace opcua_to_prometheus.Services
         private Timer timer;
         public PLCService(ConfigService configService)
         {
+            #region license
             var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
             LicensingManagement.Instance.RegisterManagedResource("QuickOPC", "Multipurpose", Assembly.GetExecutingAssembly(), "replace me with license file");
             long serialNumber = (uint)new EasyUAClient().LicenseInfo["Multipurpose.SerialNumber"];
@@ -32,6 +33,8 @@ namespace opcua_to_prometheus.Services
             }
 
             EasyUAClient.SharedParameters.EngineParameters.CertificateAcceptancePolicy.AcceptAnyCertificate = true;
+            #endregion
+
             Console.WriteLine("PLCService: starting");
 
             this.configService = configService;
@@ -75,14 +78,13 @@ namespace opcua_to_prometheus.Services
             timer.Start();
         }
 
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Console.WriteLine($"{countTagsChanged} tags per second");
 
             countTagsChanged = 0;
         }
-
-       
 
         private void client_DataChangeNotification(object sender, EasyUADataChangeNotificationEventArgs e)
         { 
