@@ -1,4 +1,4 @@
-OPCUAEndpoint: opc.tcp://127.0.0.1:4897/Softing/dataFEED/Server
+OPCUAEndpoint: opc.tcp://127.0.0.1:4897/MyEndpoint
 SubscriptionInterval: 1000
 Tags:
   - MetricsName: Metric1
@@ -27,6 +27,7 @@ Tags:
     NodeID: ns=3;s=DB.OPCData.Temperaturen.[11]
   - MetricsName: Metric13
     NodeID: ns=3;s=DB.OPCData.Temperaturen.[12]
+    SubscriptionInterval: 200
   - MetricsName: Metric0
     NodeID: ns=3;s=DB.OPCData.Alive
     SubscriptionInterval: 100
