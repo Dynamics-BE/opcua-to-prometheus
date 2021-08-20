@@ -7,6 +7,6 @@ services:
     restart: unless-stopped
     hostname: opcua-to-prometheus
     ports:
-      - 5489:80
+      - 5489:5000
     volumes:
       - ./config.yml:/app/config.yml
