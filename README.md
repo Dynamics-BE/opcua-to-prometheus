@@ -19,7 +19,7 @@ This config file is automatically reloaded when changes are detected. Automatic 
 
 Only Anonymous authentication and none encryption is used.
 
-`OPCUAEndpoint` Endpoint of the OPC UA Server.
-`SubscriptionInterval` Sampling time and minimum delay between two updates of the subscription. Can be used globally and or for each tag separatly. If nothing is specified for the tag the global value is used.
-`MetricsName` The name of the metric that will be used for the prometheus metrics file.
-`NodeID` NodeID of the tag in the OPC UA Server including namespace.
+* `OPCUAEndpoint` Endpoint of the OPC UA Server.
+* `SubscriptionInterval` Sampling time and minimum delay between two updates of the subscription. Can be used globally and or for each tag separatly. If nothing is specified for the tag the global value is used.
+* `MetricsName` The name of the metric that will be used for the prometheus metrics file.
+* `NodeID` NodeID of the tag in the OPC UA Server including namespace.
