@@ -17,7 +17,7 @@ namespace opcua_to_prometheus
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ConfigService>();
-            services.AddSingleton<PLCService_OPCFoundation>();
+            services.AddSingleton<PLCService>();
 
             services.AddControllers();
             services.AddMvc();

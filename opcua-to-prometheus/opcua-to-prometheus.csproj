@@ -10,7 +10,6 @@
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.366.38" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.366.38" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.4.366.38" />
-    <PackageReference Include="OpcLabs.QuickOpc" Version="5.58.451" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 

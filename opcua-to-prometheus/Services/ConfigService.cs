@@ -55,7 +55,7 @@ namespace opcua_to_prometheus.Services
               
                 try
                 {
-                    using (var sr = new StreamReader("../config.yml"))
+                    using (var sr = new StreamReader("./config.yml"))
                     {
                         readConfig = deserializer.Deserialize<Configuration>(sr);
                     }
@@ -83,12 +83,12 @@ namespace opcua_to_prometheus.Services
 
         private void StartFileWatch()
         {
-            watcher = new FileSystemWatcher(Path.Combine(Directory.GetCurrentDirectory(), @"..\"), "config.yml");
+            Console.WriteLine($"Current directory {Directory.GetCurrentDirectory()}");
+            watcher = new FileSystemWatcher(Directory.GetCurrentDirectory(), "config.yml");
             watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
             watcher.Changed += OnChanged;
             watcher.Renamed += OnChanged;
             watcher.EnableRaisingEvents = true;
-            Console.WriteLine($"Current directory {Path.Combine(Directory.GetCurrentDirectory(), @"..\")}");
             Console.WriteLine($"Watching config file for changes.");
         }
         private void OnChanged(object source, FileSystemEventArgs e)

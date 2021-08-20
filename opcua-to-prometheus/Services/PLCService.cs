@@ -1,114 +1,97 @@
 ﻿using System;
-using System.Timers;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using OpcLabs.EasyOpc.UA.PubSub;
-using OpcLabs.EasyOpc.UA;
-using OpcLabs.EasyOpc.UA.OperationModel;
+using Opc.Ua;
+using Opc.Ua.Client;
+using Opc.Ua.Configuration;
 using opcua_to_prometheus.Models;
-using OpcLabs.BaseLib.ComponentModel;
-using System.Reflection;
+using opcua_to_prometheus.OPC_Foundation;
 
 namespace opcua_to_prometheus.Services
 {
     public class PLCService : IDisposable
     {
+        private UAClient client;
         private readonly ConfigService configService;
-        private EasyUAClient client;
-        private int countTagsChanged;
-        private Timer timer;
+        private bool clientConnected;
+
         public PLCService(ConfigService configService)
         {
-            #region license
-            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            LicensingManagement.Instance.RegisterManagedResource("QuickOPC", "Multipurpose", Assembly.GetExecutingAssembly(), "replace me with license file");
-            long serialNumber = (uint)new EasyUAClient().LicenseInfo["Multipurpose.SerialNumber"];
-            if ((1111110000 <= serialNumber) && (serialNumber <= 1111119999))
-            {
-                Console.WriteLine("QuickOPC license did not get applied, this is a trial license. License is only valid for versions 5.58.451 and lower.");
-                throw new ApplicationException("QuickOPC license did not get applied, this is a trial license. License is only valid for versions 5.58.451 and lower.");
-            }
-            else
-            {
-                Console.WriteLine($"Valid QuickOPC license with serial number: {serialNumber}");
-            }
-
-            EasyUAClient.SharedParameters.EngineParameters.CertificateAcceptancePolicy.AcceptAnyCertificate = true;
-            #endregion
-
-            Console.WriteLine("PLCService: starting");
-
             this.configService = configService;
-
-            UAEndpointDescriptor endpointDescriptor = this.configService.ActiveConfig.OPCUAEndpoint;
-            client = new EasyUAClient();
-            client.DataChangeNotification += client_DataChangeNotification;
-
-            List<EasyUAMonitoredItemArguments> easyUAMonitoredItemArguments = new List<EasyUAMonitoredItemArguments>();
-
-
-            foreach (Tag tag in configService.ActiveConfig.Tags)
-            {
-                //take 100ms as default
-                int subscriptionInterval = 100;
-
-               
-                if (configService.ActiveConfig.SubscriptionInterval != 0)
-                {
-                    subscriptionInterval = configService.ActiveConfig.SubscriptionInterval;
-                }
-                
-                if (tag.SubscriptionInterval != 0)
-                {
-                    subscriptionInterval = tag.SubscriptionInterval;
-                }
-
-                easyUAMonitoredItemArguments.Add(new EasyUAMonitoredItemArguments(null, endpointDescriptor, tag.NodeID,
-                       new UAMonitoringParameters(subscriptionInterval)));
-
-
-            }
-
-            client.SubscribeMultipleMonitoredItems(easyUAMonitoredItemArguments.ToArray());
-
-            
-            var subscriber = new EasyUASubscriber();
-
-            timer = new Timer(1000);
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            configService.ConfigChangedEvent += ConfigService_ConfigChangedEvent;
         }
-
-
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine($"{countTagsChanged} tags per second");
-
-            countTagsChanged = 0;
-        }
-
-        private void client_DataChangeNotification(object sender, EasyUADataChangeNotificationEventArgs e)
+        public async Task<PLCService> InitializeAsync()
         { 
 
-            if (e.Succeeded)
+            Console.WriteLine("PLC Service starting...");
+
+            clientConnected = await ConnectingClient();
+
+            if (clientConnected)
             {
-                countTagsChanged++;
-                /*Console.WriteLine("{0}: {1}", e.Arguments.NodeDescriptor, e.AttributeData.Value);*/
-                Tag foundTag = configService.ActiveConfig.Tags.Find(tag => tag.NodeID == e.Arguments.NodeDescriptor.NodeId);
-                if (foundTag != null)
-                {
-                    foundTag.Value = e.AttributeData.Value;
-                }
+                Console.Write("Connected");
+                client.SubscribeToDataChanges(configService.ActiveConfig.Tags);
             }
             else
-                Console.WriteLine("{0} *** Failure: {1}", e.Arguments.NodeDescriptor, e.ErrorMessageBrief);
+            {
+                Console.WriteLine("Could not connect to server!");
+            }
+            return this;
+        }
+
+        public async Task<bool> ConnectingClient()
+        {
+            try
+            {
+                // Define the UA Client application
+                ApplicationInstance application = new ApplicationInstance();
+                application.ApplicationName = "OPCUA-to-prometheus";
+                application.ApplicationType = ApplicationType.Client;
+
+                // load the application configuration.
+                application.ApplicationConfiguration = new ApplicationConfiguration();
+                application.ApplicationConfiguration.SecurityConfiguration = new SecurityConfiguration();
+                application.ApplicationConfiguration.SecurityConfiguration.AutoAcceptUntrustedCertificates = true;
+                application.ApplicationConfiguration.ClientConfiguration = new ClientConfiguration();
+
+                client = new UAClient(application.ApplicationConfiguration, null);
+                client.ServerUrl = configService.ActiveConfig.OPCUAEndpoint;
+
+                bool connected = await client.ConnectAsync();
+                return connected;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+        private void ConfigService_ConfigChangedEvent(object sender, EventArgs e)
+        {
+            // Recreate subscriptions
+            if (clientConnected)
+            {
+                client.SubscribeToDataChanges(configService.ActiveConfig.Tags);
+            }
+            else
+            {
+                Console.WriteLine("Not connected to the server");
+            }
+
         }
 
         public void Dispose()
         {
             if (client != null)
             {
-                client.UnsubscribeAllMonitoredItems();
+                client.Disconnect();
             }
         }
+
     }
+
+        
+
 }

@@ -18,7 +18,7 @@ namespace opcua_to_prometheus
         {
             var webHost = CreateHostBuilder(args).Build();
 
-            var plcService = webHost.Services.GetRequiredService<PLCService_OPCFoundation>();
+            var plcService = webHost.Services.GetRequiredService<PLCService>();
             await plcService.InitializeAsync();
 
             webHost.Run();
@@ -28,7 +28,9 @@ namespace opcua_to_prometheus
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .UseStartup<Startup>()
+                    .UseUrls("http://0.0.0.0:5000");
                 });
     }
 }

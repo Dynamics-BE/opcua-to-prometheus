@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  opcua-to-prometheus:
+    build: ./opcua-to-prometheus
+    container_name: opcua-to-prometheus
+    restart: unless-stopped
+    hostname: opcua-to-prometheus
+    ports:
+      - 5489:80
+    volumes:
+      - ./config.yml:/app/config.yml
