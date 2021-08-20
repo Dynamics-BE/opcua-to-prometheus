@@ -16,3 +16,10 @@ Configure prometheus to use the metrics file that is available on `http://<host>
 ## Config file
 The config file `./opcua-to-prometheus/config.yml` has the connection details of the PLC and a list of tags that will be exposed in the metrics file.
 This config file is automatically reloaded when changes are detected. Automatic config file reload does not work with docker, restart the container after changing config.
+
+Only Anonymous authentication and none encryption is used.
+
+`OPCUAEndpoint` Endpoint of the OPC UA Server.
+`SubscriptionInterval` Sampling time and minimum delay between two updates of the subscription. Can be used globally and or for each tag separatly. If nothing is specified for the tag the global value is used.
+`MetricsName` The name of the metric that will be used for the prometheus metrics file.
+`NodeID` NodeID of the tag in the OPC UA Server including namespace.
