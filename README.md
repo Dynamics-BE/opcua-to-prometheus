@@ -8,7 +8,7 @@ Reading nodes from a OPC UA server and presenting them as a plaintext metrics fi
 
 ## Using docker
 * copy `example.docker-compose.yml` to `docker-compose.yml` and adjust for your purposes
-* copy `./opcua-to-prometheus/config.yml` to `./config.yml` fill in your tags
+* copy `example.config.yml` to `config.yml` fill in your tags
 * execute `sudo docker-compose up --build`
 
 Configure prometheus to use the metrics file that is available on `http://<host>:5489/metrics`
